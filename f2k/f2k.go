@@ -30,7 +30,7 @@ func init() {
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
-  fmt.Fprint(w, "f2k(Feed2Knowledge) is an API to provide one HN Submission a day. Currently the information is sourced from HN")
+  fmt.Fprint(w, "f2k is an api that provides random HN posts when requested. Fork here - https://github.com/avinoth/f2k")
 }
 
 func pod_handler(w http.ResponseWriter, r *http.Request) {
