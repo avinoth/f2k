@@ -57,7 +57,8 @@ func pod_handler(w http.ResponseWriter, r *http.Request) {
     log.Fatal(err)
   }
 
-  res, err := json.Marshal(results.Result[0])
+  idx := randomInt(0, 19)
+  res, err := json.Marshal(results.Result[idx])
   if err != nil {
     fmt.Fprint(w, "Something Went Wrong!")
     log.Fatal(err)
