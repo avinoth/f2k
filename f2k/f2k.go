@@ -14,6 +14,8 @@ import (
 )
 
 type Results struct {
+  ResultsPerPage int `json:"hitsPerPage"`
+  TotalPages int `json:"nbPages"`
   Result []Story `json:"hits"`
 }
 
@@ -39,9 +41,12 @@ func pod_handler(w http.ResponseWriter, r *http.Request) {
   var results Results
 
   hn_url := "http://hn.algolia.com/api/v1/"
-  page := rand.Intn(50)
   points := randomInt(200, 600)
-  url := hn_url + "search?tags=story&numericFilters=points>" + strconv.Itoa(points) + "&page=" + strconv.Itoa(page)
+  url := hn_url + "search?tags=story&numericFilters=points>" + strconv.Itoa(points)
+
+  meta_details := get_meta(url, r, w)
+  page := randomInt(0, meta_details.TotalPages)
+  url = url + "&page=" + strconv.Itoa(page)
 
   resp, err := makeRequest(url, r)
 
@@ -57,7 +62,7 @@ func pod_handler(w http.ResponseWriter, r *http.Request) {
     log.Fatal(err)
   }
 
-  idx := randomInt(0, 19)
+  idx := randomInt(0, meta_details.ResultsPerPage)
   res, err := json.Marshal(results.Result[idx])
   if err != nil {
     fmt.Fprint(w, "Something Went Wrong!")
@@ -84,4 +89,23 @@ func makeRequest(url string, r *http.Request) (*http.Response, error) {
     return nil, fmt.Errorf(http.StatusText(http.StatusNotFound))
   }
   return response, nil
+}
+
+func get_meta(url string, r *http.Request, w http.ResponseWriter) *Results {
+  var results Results
+  resp, err := makeRequest(url, r)
+
+  if err != nil {
+    fmt.Fprint(w, "Something Went Wrong!")
+    log.Fatal(err)
+  }
+
+  err = json.NewDecoder(resp.Body).Decode(&results)
+
+  if err != nil {
+    fmt.Fprint(w, "Something Went Wrong!")
+    log.Fatal(err)
+  }
+
+  return &results
 }
