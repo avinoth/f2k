@@ -40,9 +40,11 @@ func pod_handler(w http.ResponseWriter, r *http.Request) {
 
   var results Results
 
+  query := r.FormValue("q")
+
   hn_url := "http://hn.algolia.com/api/v1/"
   points := randomInt(200, 600)
-  url := hn_url + "search?tags=story&numericFilters=points>" + strconv.Itoa(points)
+  url := hn_url + "search?tags=story&query=" + query + "&numericFilters=points>" + strconv.Itoa(points)
 
   meta_details := get_meta(url, r, w)
   page := randomInt(0, meta_details.TotalPages)
